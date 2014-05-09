@@ -1,3 +1,4 @@
+from allauth.socialaccount.models import SocialApp
 from django.conf import settings
 from django.utils import importlib
 
@@ -9,6 +10,9 @@ class ProviderRegistry(object):
     def get_list(self):
         self.load()
         return self.provider_map.values()
+
+    def get_configured_list(self):
+        return SocialApp.objects.values_list('provider', flat=True)
 
     def register(self, cls):
         self.provider_map[cls.id] = cls()
