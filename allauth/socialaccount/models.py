@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.sites.models import Site
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.crypto import get_random_string
+from django.utils.translation import ugettext_lazy as _
 try:
     from django.utils.encoding import force_text
 except ImportError:
@@ -37,6 +38,8 @@ class SocialApp(models.Model):
     provider = models.CharField(max_length=30,
                                 choices=providers.registry.as_choices())
     name = models.CharField(max_length=40)
+    enabled = models.BooleanField(verbose_name=_('enabled'),
+                                  default=True)
     client_id = models.CharField(max_length=100,
                                  help_text='App ID, or consumer key')
     secret = models.CharField(max_length=100,
@@ -53,6 +56,11 @@ class SocialApp(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def get_enabled_providers():
+    enabled = SocialApp.objects.filter(enabled=True).values_list('provider', flat=True)
+    return list(filter(lambda p: p.id in enabled, providers.registry.get_list()))
 
 
 @python_2_unicode_compatible

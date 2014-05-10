@@ -1,10 +1,10 @@
-from allauth.socialaccount.models import SocialApp
 from django.template.defaulttags import token_kwargs
 from django import template
 
-from allauth.socialaccount import providers
+from allauth.socialaccount import providers, models
 
 register = template.Library()
+
 
 class ProviderLoginURLNode(template.Node):
     def __init__(self, provider_id, params):
@@ -36,17 +36,14 @@ def provider_login_url(parser, token):
     provider_id = bits[1]
     params = token_kwargs(bits[2:], parser, support_legacy=False)
     return ProviderLoginURLNode(provider_id, params)
-    
+
+
 class ProvidersMediaJSNode(template.Node):
     def render(self, context):
         request = context['request']
 
-        all_providers = providers.registry.get_list()
-        configured = SocialApp.objects.values_list('provider', flat=True)
-        configured_providers = filter(lambda x: x.id in configured, all_providers)
-
-        ret = '\n'.join([p.media_js(request) 
-                         for p in configured_providers])
+        ret = '\n'.join([p.media_js(request)
+                         for p in models.get_enabled_providers()])
         return ret
 
 

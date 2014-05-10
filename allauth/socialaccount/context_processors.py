@@ -1,9 +1,6 @@
-from . import providers
-from allauth.socialaccount.models import SocialApp
+from allauth.socialaccount import models
 
 
 def socialaccount(request):
-    all_providers = providers.registry.get_list()
-    configured = SocialApp.objects.values_list('provider', flat=True)
-    ctx = {'providers':  filter(lambda x: x.id in configured, all_providers)}
+    ctx = {'providers': models.get_enabled_providers()}
     return dict(socialaccount=ctx)
