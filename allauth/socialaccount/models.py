@@ -40,6 +40,8 @@ class SocialApp(models.Model):
                                 choices=providers.registry.as_choices())
     name = models.CharField(verbose_name=_('name'),
                             max_length=40)
+    enabled = models.BooleanField(verbose_name=_('enabled'),
+                                  default=True)
     client_id = models.CharField(verbose_name=_('client id'),
                                  max_length=100,
                                  help_text=_('App ID, or consumer key'))
@@ -63,6 +65,11 @@ class SocialApp(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def get_enabled_providers():
+    enabled = SocialApp.objects.filter(enabled=True).values_list('provider', flat=True)
+    return list(filter(lambda p: p.id in enabled, providers.registry.get_list()))
 
 
 @python_2_unicode_compatible
