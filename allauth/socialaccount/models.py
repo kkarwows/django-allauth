@@ -63,6 +63,11 @@ class SocialApp(models.Model):
         return self.name
 
 
+class SiteSocialAccount(models.Model):
+    site = models.ForeignKey('django.contrib.sites.models.Site')
+    socialApp = models.ForeignKey('SocialApp')
+
+
 @python_2_unicode_compatible
 class SocialAccount(models.Model):
     user = models.ForeignKey(allauth.app_settings.USER_MODEL)
