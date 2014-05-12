@@ -53,7 +53,7 @@ class SocialApp(models.Model):
     # a ManyToManyField. Note that Facebook requires an app per domain
     # (unless the domains share a common base name).
     # blank=True allows for disabling apps without removing them
-    sites = models.ManyToManyField(Site, blank=True)
+    sites = models.ManyToManyField(Site, blank=True, through='SocialApp_Sites')
 
     class Meta:
         verbose_name = _('social application')
@@ -63,9 +63,12 @@ class SocialApp(models.Model):
         return self.name
 
 
-class SiteSocialAccount(models.Model):
-    site = models.ForeignKey('django.contrib.sites.models.Site')
-    socialApp = models.ForeignKey('SocialApp')
+class SocialApp_Sites(models.Model):
+    site = models.ForeignKey(Site)
+    socialapp = models.ForeignKey(SocialApp)
+
+    class Meta:
+        unique_together = ('site', 'socialapp')
 
 
 @python_2_unicode_compatible
