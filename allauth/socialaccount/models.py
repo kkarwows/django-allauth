@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import json
+from django.conf import settings
 
 from django.core.exceptions import PermissionDenied
 from django.db import models
@@ -59,7 +60,7 @@ class SocialApp(models.Model):
 
 
 def get_enabled_providers():
-    enabled = SocialApp.objects.filter(enabled=True).values_list('provider', flat=True)
+    enabled = SocialApp.objects.filter(enabled=True, sites__id__exact=settings.SITE_ID).values_list('provider', flat=True)
     return list(filter(lambda p: p.id in enabled, providers.registry.get_list()))
 
 
